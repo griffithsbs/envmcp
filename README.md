@@ -1,12 +1,32 @@
 # envmcp
 
-A lightweight way to use environment variables in your Cursor MCP server definitions.
+Use environment variables in your Cursor MCP server definitions:
+
+## Recommended usage
+```json
+{
+  "my_mcp_server": {
+    "command": "npx",
+    "args": [
+      "envmcp",
+      "start-my-mcp-server",
+      "$MY_NAMED_ENVIRONMENT_VARIABLE",
+    ]
+  },
+  "another_example": {
+    "command": "npx",
+    "args": [
+      "envmcp",
+      "npx", "pull-something-else-with-npx", "$MY_DATABASE_CONNECTION_STRING",
+    ]
+  }
+}
+```
 
 ## What does it do?
 Receives a shell command as input, loads environment variables from an env file, and then executes the command
 
 ## What's the point?
-
 Store the secrets needed by your MCP server config in a file called .env.mcp in your home directory, and then replace this...
 
 ```json
@@ -30,15 +50,17 @@ Store the secrets needed by your MCP server config in a file called .env.mcp in 
 ```json
 {
   "my_database": {
-    "command": "envmcp",
+    "command": "npx",
     "args": [
+      "envmcp",
       "start-my-mcp-server",
       "$MY_DATABASE_CONNECTION_STRING",
     ]
   },
   "my_other_mcp_server": {
-    "command": "envmcp",
+    "command": "npx",
     "args": [
+      "envmcp",
       "start-my-other-mcp-server",
     ]
   }
