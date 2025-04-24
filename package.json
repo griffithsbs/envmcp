@@ -1,0 +1,35 @@
+{
+  "name": "envmcp",
+  "version": "0.1.0",
+  "description": "A lightweight way to use environment variables in your Cursor MCP server definitions.",
+  "main": "dist/index.js",
+  "bin": {
+    "envmcp": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc && chmod +x dist/cli.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "cursor",
+    "mcp",
+    "mcp-server",
+    "env",
+    "environment",
+    "dotenv"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.16.0",
+    "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "sample.env.mcp"
+  ]
+} 
