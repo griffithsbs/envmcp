@@ -18,8 +18,16 @@
     "environment",
     "dotenv"
   ],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/griffithsbs/envmcp.git"
+  },
+  "homepage": "https://github.com/griffithsbs/envmcp",
+  "author": "Ben Griffiths <benstephengriffiths@gmail.com>",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/griffithsbs/envmcp/issues"
+  },
   "devDependencies": {
     "@types/node": "^18.16.0",
     "typescript": "^5.0.4"
@@ -32,4 +40,4 @@
     "README.md",
     "sample.env.mcp"
   ]
-} 
+}
