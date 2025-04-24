@@ -3,6 +3,8 @@
 Use environment variables in your Cursor MCP server definitions:
 
 ## Recommended usage
+1. Store any secrets required by your stdio MCP servers as environment variables in a file called `.env.mcp` in your user's home directory
+2. Prefix your stdio command with `npx envmcp` and reference the env vars by name in your cursor MCP config:
 ```json
 {
   "my_mcp_server": {
