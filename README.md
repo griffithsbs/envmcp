@@ -1,6 +1,8 @@
 # envmcp
+[![npm version](https://img.shields.io/npm/v/envmcp.svg)](https://www.npmjs.com/package/envmcp)
+[![total downloads](https://img.shields.io/npm/dt/envmcp.svg)](https://www.npmjs.com/package/envmcp)
 
-Use environment variables in your Cursor MCP server definitions:
+Use environment variables in your Cursor MCP server definitions.
 
 ## Recommended usage
 1. Store any secrets required by your stdio MCP servers as environment variables in a file called `.env.mcp` in your user's home directory
