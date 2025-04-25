@@ -44,8 +44,7 @@ export function findEnvFile(startDir: string = process.cwd()): string | undefine
   } catch (err) {
     console.error(`Error checking file at ${homeEnvFile}:`, err);
   }
-  
-  console.log('No .env.mcp file found in directory tree');
+
   return undefined;
 }
 
@@ -101,10 +100,7 @@ export function loadEnvMcp(customPath?: string): boolean {
   }
   
   try {
-    console.log(`Loading environment variables from: ${envPath}`);
     const envVars = parseEnvFile(envPath);
-
-    console.log(`Loaded variables: ${Object.keys(envVars).join(', ')}`);
     
     // Add variables to process.env
     Object.entries(envVars).forEach(([key, value]) => {
