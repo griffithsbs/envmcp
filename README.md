@@ -5,8 +5,33 @@
 Use environment variables in your Cursor MCP server definitions.
 
 ## Recommended usage
-1. Store any secrets required by your stdio MCP servers as environment variables in a file called `.env.mcp` in your user's home directory
-2. Prefix your stdio command with `npx envmcp` and reference the env vars by name in your cursor MCP config:
+Prefix your stdio command with `npx envmcp` and reference env vars by name in your cursor MCP config.
+
+You can either pass the filepath of your env file as an argument...
+```json
+{
+  "my_mcp_server": {
+    "command": "npx",
+    "args": [
+      "envmcp",
+      "--env-file",
+      "/path/to/my.env.file",
+      "start-my-mcp-server",
+      "$MY_NAMED_ENVIRONMENT_VARIABLE",
+    ]
+  },
+  "example_with_shorthand_flag_name": {
+    "command": "npx",
+    "args": [
+      "envmcp",
+      "-e",
+      "/path/to/my.env.file",
+      "npx", "pull-something-else-with-npx", "$MY_DATABASE_CONNECTION_STRING",
+    ]
+  }
+}
+```
+... or put your secrets into a file called `.env.mcp` in your user's home directory, which will be looked up by default:
 ```json
 {
   "my_mcp_server": {
@@ -15,15 +40,6 @@ Use environment variables in your Cursor MCP server definitions.
       "envmcp",
       "start-my-mcp-server",
       "$MY_NAMED_ENVIRONMENT_VARIABLE",
-    ]
-  },
-  "another_example": {
-    "command": "npx",
-    "args": [
-      "envmcp",
-      "--env-file",
-      "/path/to/my.env.file",
-      "npx", "pull-something-else-with-npx", "$MY_DATABASE_CONNECTION_STRING",
     ]
   }
 }
