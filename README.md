@@ -103,6 +103,10 @@ QUOTED_VALUE="value with spaces"
 
 See the `sample.env.mcp` file for a more detailed example.
 
+## Contributing
+
+Contributions are welcome: please feel free to open issues or PRs!
+
 ## Development
 
 ### Prerequisites
