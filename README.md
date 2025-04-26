@@ -5,8 +5,33 @@
 Use environment variables in your Cursor MCP server definitions.
 
 ## Recommended usage
-1. Store any secrets required by your stdio MCP servers as environment variables in a file called `.env.mcp` in your user's home directory
-2. Prefix your stdio command with `npx envmcp` and reference the env vars by name in your cursor MCP config:
+Prefix your stdio command with `npx envmcp` and reference env vars by name in your cursor MCP config.
+
+You can either pass the filepath of your env file as an argument...
+```json
+{
+  "my_mcp_server": {
+    "command": "npx",
+    "args": [
+      "envmcp",
+      "--env-file",
+      "/path/to/my.env.file",
+      "start-my-mcp-server",
+      "$MY_NAMED_ENVIRONMENT_VARIABLE",
+    ]
+  },
+  "example_with_shorthand_flag_name": {
+    "command": "npx",
+    "args": [
+      "envmcp",
+      "-e",
+      "/path/to/my.env.file",
+      "npx", "pull-something-else-with-npx", "$MY_DATABASE_CONNECTION_STRING",
+    ]
+  }
+}
+```
+... or put your secrets into a file called `.env.mcp` in your user's home directory, which will be looked up by default:
 ```json
 {
   "my_mcp_server": {
@@ -15,13 +40,6 @@ Use environment variables in your Cursor MCP server definitions.
       "envmcp",
       "start-my-mcp-server",
       "$MY_NAMED_ENVIRONMENT_VARIABLE",
-    ]
-  },
-  "another_example": {
-    "command": "npx",
-    "args": [
-      "envmcp",
-      "npx", "pull-something-else-with-npx", "$MY_DATABASE_CONNECTION_STRING",
     ]
   }
 }
@@ -80,15 +98,20 @@ npm install -g envmcp
 ## Usage
 
 ```bash
-envmcp <command> [args...]
+envmcp [--env-file <path>] <command> [args...]
 ```
 
 The tool will:
 1. Look for a `.env.mcp` file in the current directory
 2. If not found, it will search up the directory tree for a `.env.mcp` file
 3. As a last resort, it will check for `~/.env.mcp`
-3. Load the environment variables from the first `.env.mcp` file found
-4. Execute the specified command with any provided arguments
+4. If `--env-file` or `-e` is specified, it will use that file instead of searching
+5. Load the environment variables from the found `.env.mcp` file
+6. Execute the specified command with any provided arguments
+
+### Options
+
+- `--env-file <path>` or `-e <path>`: Specify a custom path to the environment file
 
 ## Environment File Format
 
@@ -102,6 +125,10 @@ QUOTED_VALUE="value with spaces"
 ```
 
 See the `sample.env.mcp` file for a more detailed example.
+
+## Contributing
+
+Contributions are welcome: please feel free to open issues or PRs!
 
 ## Development
 
