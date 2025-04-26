@@ -21,6 +21,8 @@ Use environment variables in your Cursor MCP server definitions.
     "command": "npx",
     "args": [
       "envmcp",
+      "--env-file",
+      "/path/to/my.env.file",
       "npx", "pull-something-else-with-npx", "$MY_DATABASE_CONNECTION_STRING",
     ]
   }
@@ -80,15 +82,20 @@ npm install -g envmcp
 ## Usage
 
 ```bash
-envmcp <command> [args...]
+envmcp [--env-file <path>] <command> [args...]
 ```
 
 The tool will:
 1. Look for a `.env.mcp` file in the current directory
 2. If not found, it will search up the directory tree for a `.env.mcp` file
 3. As a last resort, it will check for `~/.env.mcp`
-3. Load the environment variables from the first `.env.mcp` file found
-4. Execute the specified command with any provided arguments
+4. If `--env-file` or `-e` is specified, it will use that file instead of searching
+5. Load the environment variables from the found `.env.mcp` file
+6. Execute the specified command with any provided arguments
+
+### Options
+
+- `--env-file <path>` or `-e <path>`: Specify a custom path to the environment file
 
 ## Environment File Format
 
