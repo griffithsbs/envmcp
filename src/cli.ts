@@ -1,51 +1,65 @@
 #!/usr/bin/env node
 
-import { loadEnvMcp, executeCommand } from './index';
+import { loadEnvironmentVariablesFromFile, executeCommand } from './index';
+
+function printUsage() {
+  console.error('Usage: envmcp [--env-file <path>] <command> [args...]');
+  console.error('\nOptions:');
+  console.error('  -e, --env-file <path>     Specify a custom path to the environment file');
+  console.error('\nArguments:');
+  console.error('  <command>                 The command to execute');
+  console.error('  [args...]                 Arguments for the command');
+  console.error('\nNote: All options must precede the command.');
+}
 
 function main() {
-  // Parse command line arguments
-  const args = process.argv.slice(2);
-  
-  if (args.length === 0) {
-    console.error('Error: Command is required');
-    console.error('Usage: envmcp [--env-file <path>] <command> [args...]');
-    process.exit(1);
-  }
+  const argv = process.argv.slice(2);
+  let customEnvFilePath: string | undefined = undefined;
+  let commandIndex = 0;
+  let error = false;
 
-  let envFilePath: string | undefined;
-  let command: string;
-  let commandArgs: string[];
-
-  // Check for --env-file option
-  const envFileIndex = args.findIndex((arg: string) => arg === '--env-file' || arg === '-e');
-  if (envFileIndex !== -1) {
-    if (envFileIndex + 1 >= args.length) {
-      console.error('Error: --env-file option requires a path');
-      process.exit(1);
+  // Check for and parse any arguments provided to envmcp itself
+  while (commandIndex < argv.length) {
+    const arg = argv[commandIndex];
+    if (arg === '--env-file' || arg === '-e') {
+      if (customEnvFilePath !== undefined) {
+        console.error('Error: --env-file option specified more than once.');
+        error = true;
+        break;
+      }
+      if (commandIndex + 1 >= argv.length || argv[commandIndex + 1].startsWith('-')) {
+        console.error(`Error: ${arg} option requires a path.`);
+        error = true;
+        break;
+      }
+      customEnvFilePath = argv[commandIndex + 1];
+      commandIndex += 2;
+    } else {
+      // First non-option argument marks the start of the command
+      break;
     }
-    envFilePath = args[envFileIndex + 1];
-    // Remove the --env-file option and its value from args
-    args.splice(envFileIndex, 2);
   }
 
-  if (args.length === 0) {
-    console.error('Error: Command is required');
-    console.error('Usage: envmcp [--env-file <path>] <command> [args...]');
+  const commandArgs = argv.slice(commandIndex);
+
+  if (error || commandArgs.length === 0) {
+    if (!error) {
+      console.error('Error: Command is required');
+    }
+    printUsage();
     process.exit(1);
   }
-  
-  // The first argument is the command to execute
-  command = args[0];
-  // The rest are arguments to pass to the command
-  commandArgs = args.slice(1);
-  
+
+  const command = commandArgs[0];
+  const actualArgsForCommand = commandArgs.slice(1);
+
   // Load environment variables from .env.mcp file
-  if (!loadEnvMcp(envFilePath)) {
+  if (!loadEnvironmentVariablesFromFile(customEnvFilePath)) {
     process.exit(1);
   }
-  
+
   // Execute the command with args
-  executeCommand(command, commandArgs);
+  executeCommand(command, actualArgsForCommand);
 }
 
 main(); 

@@ -1,25 +1,35 @@
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import { ChildProcess, spawn } from 'child_process';
+
+const ENV_FILENAME = '.env.mcp';
+
+function reportError(message: string, error?: unknown) {
+  console.error(message);
+  if (error) {
+    console.error(error);
+  }
+}
 
 /**
  * Finds the closest .env.mcp file by traversing up the directory tree
  * @param startDir The directory to start searching from
  * @returns The path to the found .env.mcp file or undefined if not found
  */
-export function findEnvFile(startDir: string = process.cwd()): string | undefined {
+export function findEnvFilePath(startDir: string = process.cwd()): string | undefined {
   let currentDir = startDir;
   
   // Continue checking until we reach the root directory
   while (true) {
-    const envFilePath = path.join(currentDir, '.env.mcp');
+    const envFilePath = path.join(currentDir, ENV_FILENAME);
     
     try {
       if (fs.existsSync(envFilePath)) {
         return envFilePath;
       }
     } catch (err) {
-      console.error(`Error checking file at ${envFilePath}:`, err);
+      reportError(`Error checking file at ${envFilePath}:`, err);
     }
     
     // Move up to the parent directory
@@ -35,14 +45,14 @@ export function findEnvFile(startDir: string = process.cwd()): string | undefine
 
   // Special case: Check for ~/.env.mcp
   const homeDir = os.homedir();
-  const homeEnvFile = path.join(homeDir, '.env.mcp');
+  const homeEnvFile = path.join(homeDir, ENV_FILENAME);
   
   try {
     if (fs.existsSync(homeEnvFile)) {
       return homeEnvFile;
     }
   } catch (err) {
-    console.error(`Error checking file at ${homeEnvFile}:`, err);
+    reportError(`Error checking file at ${homeEnvFile}:`, err);
   }
 
   return undefined;
@@ -53,7 +63,7 @@ export function findEnvFile(startDir: string = process.cwd()): string | undefine
  * @param filePath Path to the environment file
  * @returns Object containing environment variables
  */
-export function parseEnvFile(filePath: string): Record<string, string> {
+function parseEnvFile(filePath: string): Record<string, string> {
   const content = fs.readFileSync(filePath, 'utf8');
   const result: Record<string, string> = {};
   
@@ -88,11 +98,11 @@ export function parseEnvFile(filePath: string): Record<string, string> {
 
 /**
  * Loads environment variables from a .env.mcp file
- * @param customPath Optional custom path to the env file
+ * @param filePath Optional custom path to the env file
  * @returns True if environment variables were loaded, false otherwise
  */
-export function loadEnvMcp(customPath?: string): boolean {
-  const envPath = customPath || findEnvFile();
+export function loadEnvironmentVariablesFromFile(filePath?: string): boolean {
+  const envPath = filePath || findEnvFilePath();
   
   if (!envPath) {
     console.error('No .env.mcp file found');
@@ -109,7 +119,7 @@ export function loadEnvMcp(customPath?: string): boolean {
     
     return true;
   } catch (error) {
-    console.error(`Error loading .env.mcp file: ${error}`);
+    reportError(`Error loading .env.mcp file:`, error);
     return false;
   }
 }
@@ -118,18 +128,30 @@ export function loadEnvMcp(customPath?: string): boolean {
  * Executes a command with the given arguments
  * @param command The command to execute
  * @param args The arguments for the command
+ * @returns The spawned ChildProcess
  */
-export function executeCommand(command: string, args: string[] = []): void {
-  const { spawn } = require('child_process');
-
+export function executeCommand(command: string, args: string[] = []): ChildProcess {
   const childProcess = spawn(command, args, {
     stdio: 'inherit',
     shell: true,
     env: process.env
   });
+
+  // Handle errors during spawn
+  childProcess.on('error', (err) => {
+    console.error(`Failed to start child process: ${err.message}`);
+    process.exit(1);
+  });
   
   // Handle process exit
-  childProcess.on('close', (code: number) => {
-    process.exit(code);
+  childProcess.on('close', (code: number, signal: string | null) => {
+    if (signal) {
+      console.warn(`Child process terminated by signal: ${signal}`);
+      process.kill(process.pid, signal);
+    } else {
+      process.exit(code);
+    }
   });
+
+  return childProcess;
 } 
