@@ -1,8 +1,7 @@
 {
   "name": "envmcp",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "A lightweight way to use environment variables in your Cursor MCP server definitions.",
-  "main": "dist/index.js",
   "bin": {
     "envmcp": "dist/cli.js"
   },
@@ -29,6 +28,9 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/griffithsbs/envmcp/issues"
+  },
+  "dependencies": {
+    "mcpipe": "^0.1.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",

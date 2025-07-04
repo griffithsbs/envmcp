@@ -4,7 +4,7 @@
 
 Use environment variables in your Cursor MCP server definitions.
 
-> **💡 Looking for more features?** Consider [mcpipe](https://github.com/griffithsbs/mcpipe) ([npm](https://www.npmjs.com/package/mcpipe)) which includes envmcp's functionality as well as debugging tools and other capabilities.
+> **💡 Looking for more features?** The latest version of envmcp delegates its implementation to my other project, [mcpipe](https://github.com/griffithsbs/mcpipe) ([npm](https://www.npmjs.com/package/mcpipe)) which includes envmcp's functionality as well as debugging and tool-namespacing capabilities for stdio MCP servers. If you would find these other features useful, consider using [mcpipe](https://github.com/griffithsbs/mcpipe) directly instead!
 
 ## Quick Start
 
