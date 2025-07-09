@@ -1,5 +1,5 @@
 {
-  "name": "envmcp",
+  "name": "envmcp-tonidy",
   "version": "0.2.2",
   "description": "A lightweight way to use environment variables in your Cursor MCP server definitions.",
   "main": "dist/index.js",
