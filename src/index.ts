@@ -59,12 +59,11 @@ export function findEnvFilePath(startDir: string = process.cwd()): string | unde
 }
 
 /**
- * Parses an environment file and returns its contents as key-value pairs
- * @param filePath Path to the environment file
+ * Parses environment content (from file or stdin) and returns key-value pairs
+ * @param content The content string to parse
  * @returns Object containing environment variables
  */
-function parseEnvFile(filePath: string): Record<string, string> {
-  const content = fs.readFileSync(filePath, 'utf8');
+function parseEnvContent(content: string): Record<string, string> {
   const result: Record<string, string> = {};
   
   // Split by newlines and process each line
@@ -97,6 +96,16 @@ function parseEnvFile(filePath: string): Record<string, string> {
 }
 
 /**
+ * Parses an environment file and returns its contents as key-value pairs
+ * @param filePath Path to the environment file
+ * @returns Object containing environment variables
+ */
+function parseEnvFile(filePath: string): Record<string, string> {
+  const content = fs.readFileSync(filePath, 'utf8');
+  return parseEnvContent(content);
+}
+
+/**
  * Loads environment variables from a .env.mcp file
  * @param filePath Optional custom path to the env file
  * @returns True if environment variables were loaded, false otherwise
@@ -122,6 +131,46 @@ export function loadEnvironmentVariablesFromFile(filePath?: string): boolean {
     reportError(`Error loading .env.mcp file:`, error);
     return false;
   }
+}
+
+/**
+ * Reads environment variables from stdin
+ * @returns Promise that resolves to true if environment variables were loaded, false otherwise
+ */
+export function loadEnvironmentVariablesFromStdin(): Promise<boolean> {
+  return new Promise((resolve) => {
+    let stdinContent = '';
+    
+    process.stdin.setEncoding('utf8');
+    
+    process.stdin.on('readable', () => {
+      let chunk;
+      while ((chunk = process.stdin.read()) !== null) {
+        stdinContent += chunk;
+      }
+    });
+    
+    process.stdin.on('end', () => {
+      try {
+        const envVars = parseEnvContent(stdinContent);
+        
+        // Add variables to process.env
+        Object.entries(envVars).forEach(([key, value]) => {
+          process.env[key] = value;
+        });
+        
+        resolve(true);
+      } catch (error) {
+        reportError(`Error parsing environment variables from stdin:`, error);
+        resolve(false);
+      }
+    });
+    
+    process.stdin.on('error', (error) => {
+      reportError(`Error reading from stdin:`, error);
+      resolve(false);
+    });
+  });
 }
 
 /**
