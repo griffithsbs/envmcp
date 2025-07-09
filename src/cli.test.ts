@@ -2,6 +2,7 @@ import { execFile } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import { spawn } from 'child_process';
 
 describe('envmcp CLI', () => {
   const defaultEnvFile = path.join(process.cwd(), '.env.mcp');
@@ -91,6 +92,76 @@ describe('envmcp CLI', () => {
       }
       expect(error).toBeNull();
       expect(stdout.trim()).toBe('default_value');
+      done();
+    });
+  }, 10000);
+
+  it('should read environment variables from stdin when --env-stdin is specified', (done) => {
+    const child = spawn(process.execPath, [
+      path.join(process.cwd(), 'dist/cli.js'),
+      '--env-stdin',
+      'node',
+      '-p',
+      'process.env.STDIN_VAR'
+    ]);
+
+    let stdout = '';
+    let stderr = '';
+
+    child.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    child.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    child.on('close', (code) => {
+      if (code !== 0) {
+        console.error('Test error - stderr:', stderr);
+        done.fail(new Error(`Process exited with code ${code}`));
+        return;
+      }
+      expect(stdout.trim()).toBe('stdin_value');
+      done();
+    });
+
+    // Write environment variables to stdin
+    child.stdin.write('STDIN_VAR=stdin_value\n');
+    child.stdin.end();
+  }, 10000);
+
+  it('should error when --env-file and --env-stdin are both specified', (done) => {
+    const args = [
+      path.join(process.cwd(), 'dist/cli.js'),
+      '--env-file',
+      customEnvFile,
+      '--env-stdin',
+      'node',
+      '-p',
+      'process.env.TEST_VAR'
+    ];
+
+    execFile(process.execPath, args, (error, stdout, stderr) => {
+      expect(error).not.toBeNull();
+      expect(stderr).toContain('--env-file and --env-stdin are mutually exclusive');
+      done();
+    });
+  }, 10000);
+
+  it('should error when --env-stdin is specified multiple times', (done) => {
+    const args = [
+      path.join(process.cwd(), 'dist/cli.js'),
+      '--env-stdin',
+      '--env-stdin',
+      'node',
+      '-p',
+      'process.env.TEST_VAR'
+    ];
+
+    execFile(process.execPath, args, (error, stdout, stderr) => {
+      expect(error).not.toBeNull();
+      expect(stderr).toContain('--env-stdin option specified more than once');
       done();
     });
   }, 10000);

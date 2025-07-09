@@ -1,6 +1,6 @@
 {
-  "name": "envmcp",
-  "version": "0.2.1",
+  "name": "@kdbx/envmcp",
+  "version": "0.2.3",
   "description": "A lightweight way to use environment variables in your Cursor MCP server definitions.",
   "main": "dist/index.js",
   "bin": {
